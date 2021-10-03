@@ -88,14 +88,14 @@ public class GameManager : Node
         spawnt.origin.y = Mathf.Clamp(spawnt.origin.y, 14.0f, 42.0f);
         SpawnLocation.Transform = spawnt;
 
-        if (Input.IsActionJustPressed("Mute"))
-        {
-            AudioStreamPlayer music = GetNode<AudioStreamPlayer>("/root/World/MusicPlayer");
-            if (music.Playing)
-                music.Stop();
-            else
-                music.Play();
-        }
+        // if (Input.IsActionJustPressed("Mute"))
+        // {
+        //     AudioStreamPlayer music = GetNode<AudioStreamPlayer>("/root/World/MusicPlayer");
+        //     if (music.Playing)
+        //         music.Stop();
+        //     else
+        //         music.Play();
+        // }
 
 
         if (PlayerStackHeight > 12.0f)
