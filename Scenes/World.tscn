@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://Scenes/FloorPlayer.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scripts/CameraShake.cs" type="Script" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://Scenes/UI/UI.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Audio/NegativeRandomPitch.tres" type="AudioStream" id=6]
 [ext_resource path="res://Audio/BlockRandomPitch.tres" type="AudioStream" id=7]
+[ext_resource path="res://Fonts/UIbig.tres" type="DynamicFont" id=8]
 
 [sub_resource type="ProceduralSky" id=1]
 sky_top_color = Color( 0.701961, 0.74902, 0.792157, 1 )
@@ -28,6 +29,25 @@ extents = Vector3( 50, 1, 50 )
 [sub_resource type="BoxShape" id=4]
 extents = Vector3( 50, 0.1, 50 )
 
+[sub_resource type="ProceduralSky" id=5]
+
+[sub_resource type="Environment" id=6]
+background_mode = 1
+background_sky = SubResource( 5 )
+background_color = Color( 0.196078, 0.266667, 0.364706, 1 )
+background_energy = 0.2
+ambient_light_color = Color( 0.396078, 0.454902, 0.541176, 1 )
+ambient_light_energy = 1.5
+tonemap_mode = 3
+dof_blur_far_distance = 125.0
+dof_blur_far_transition = 4.18
+dof_blur_far_amount = 0.17
+dof_blur_far_quality = 2
+adjustment_enabled = true
+adjustment_brightness = 1.11
+adjustment_contrast = 1.05
+adjustment_saturation = 1.11
+
 [node name="World" type="Spatial"]
 
 [node name="FloorPlayer" parent="." instance=ExtResource( 1 )]
@@ -35,6 +55,7 @@ extents = Vector3( 50, 0.1, 50 )
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 0.707107, -0.183013, 0.683013, 0, 0.965926, 0.258819, -0.707107, -0.183013, 0.683013, 24, 16, 24 )
 projection = 1
+current = true
 fov = 42.7
 size = 22.0
 near = 0.01
@@ -63,12 +84,32 @@ script = ExtResource( 4 )
 shape = SubResource( 3 )
 
 [node name="WinArea" type="Area" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0 )
 
 [node name="CollisionShape" type="CollisionShape" parent="WinArea"]
 shape = SubResource( 4 )
 
 [node name="UI" parent="." instance=ExtResource( 5 )]
+
+[node name="WinUI" type="Control" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="WinUI"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 64.0
+margin_top = -51.0
+margin_right = 369.0
+margin_bottom = 51.0
+custom_fonts/font = ExtResource( 8 )
+text = "YOU WIN"
+align = 1
+valign = 1
 
 [node name="BlockCollidePlayer" type="AudioStreamPlayer" parent="."]
 bus = "BlockCollide"
@@ -84,5 +125,12 @@ bus = "BallCollide"
 stream = ExtResource( 7 )
 volume_db = -3.0
 bus = "BlockCollide"
+
+[node name="CinematicCamera" type="Camera" parent="."]
+transform = Transform( 0.707107, -0.353553, 0.612372, 0, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 30.916, 35.19, 34.605 )
+environment = SubResource( 6 )
+projection = 1
+fov = 20.0
+size = 15.0
 
 [connection signal="body_entered" from="FallArea" to="FallArea" method="_on_FallArea_body_entered"]

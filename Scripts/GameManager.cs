@@ -5,12 +5,14 @@ using System.Collections.Generic;
 public class GameManager : Node
 {
     public int Score = 0;
-   
+
     private float zoomOutRate = 0.2f;
     private float currentScaleFactor = 1.0f;
     private float currentColorFactor = 0.0f;
     private int points = 0;
     private int ballCounter = 0;
+    public float winCounter = 0.0f;
+    public bool GameWon = false;
     private Spatial SpawnLocation;
     public PlayerController PlayerFloor;
     public float PlayerStackHeight;
@@ -20,8 +22,9 @@ public class GameManager : Node
     private PackedScene StackerShape;
     private PackedScene ObstacleBall;
     private Gradient ShapeColors;
-    private List<AudioStream> BlockCollideSounds = new List<AudioStream>{};
-    private List<AudioStream> BallCollideSounds = new List<AudioStream>{};
+    public List<Node> SpawnedShapes = new List<Node> { };
+    private List<AudioStream> BlockCollideSounds = new List<AudioStream> { };
+    private List<AudioStream> BallCollideSounds = new List<AudioStream> { };
     private AudioStreamPlayer blockCollidePlayer;
     private AudioStreamPlayer ballCollidePlayer;
     private AudioStreamPlayer ballSpawnPlayer;
@@ -30,6 +33,8 @@ public class GameManager : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        PauseMode = PauseModeEnum.Process;
+
         StackerShape = ResourceLoader.Load<PackedScene>("res://Scenes/StackerShape.tscn");
         ObstacleBall = ResourceLoader.Load<PackedScene>("res://Scenes/ObstacleBall.tscn");
         ShapeColors = ResourceLoader.Load<Gradient>("res://Materials/ShapeColors.tres");
@@ -58,7 +63,7 @@ public class GameManager : Node
         AddChild(GameClock);
 
         GameClock.Connect("timeout", this, nameof(onGameTick));
-        GameClock.WaitTime = 5.0f;
+        GameClock.WaitTime = 6.0f;
         GameClock.OneShot = false;
         GameClock.Start();
 
@@ -72,9 +77,9 @@ public class GameManager : Node
 
         CameraShake.Size += zoomOutRate * delta;
         CameraShake.Size = Mathf.Clamp(CameraShake.Size, 10.0f, 48.0f);
-        
+
         Transform camerat = CameraShake.Transform;
-        camerat.origin.y += zoomOutRate/2 * delta;
+        camerat.origin.y += zoomOutRate / 2 * delta;
         camerat.origin.y = Mathf.Clamp(camerat.origin.y, 12.0f, 30.0f);
         CameraShake.Transform = camerat;
 
@@ -83,7 +88,37 @@ public class GameManager : Node
         spawnt.origin.y = Mathf.Clamp(spawnt.origin.y, 14.0f, 42.0f);
         SpawnLocation.Transform = spawnt;
 
-
+        if (PlayerStackHeight > 16.0f)
+        {
+            if (winCounter >= 5.0f)
+            {
+                Camera cine = GetNode<Camera>("/root/World/CinematicCamera");
+                if (GameWon == false)
+                {
+                    GameWon = true;
+                    GD.Print("hit 16m!");
+                    DoPopup("you hit 16m! you win!");
+                    UI.Visible = false;
+                    GetNode<Control>("/root/World/WinUI").Visible = true;
+                    SpawnLocation.Visible = false;
+                    foreach (var shape in SpawnedShapes)
+                    {
+                        if (shape is StackerShape s && s.HasLanded == false)
+                            shape.QueueFree();
+                    }
+                    cine.Current = true;
+                    GetTree().Paused = true;
+                    winCounter = 5.0f;
+                }
+                cine.Size += 1.0f * delta;
+                cine.Size = Mathf.Clamp(cine.Size, 15.0f, 40.0f);
+            }
+            winCounter += 1.0f * delta;
+        }
+        else
+        {
+            winCounter = 0.0f;
+        }
     }
 
     void onGameTick()
@@ -102,11 +137,12 @@ public class GameManager : Node
             ballCounter = 0;
             return;
         }
-        
+
         StackerShape newShape = StackerShape.Instance<StackerShape>();
         newShape.SetSizeScale(currentScaleFactor, currentScaleFactor);
         newShape.SetColor(ShapeColors.Interpolate(currentColorFactor));
         AddChild(newShape);
+        SpawnedShapes.Add(newShape);
         Transform t = newShape.Transform;
         t.origin = SpawnLocation.Transform.origin;
         t.origin.y += 10.0f;
@@ -115,14 +151,14 @@ public class GameManager : Node
         SpawnLocation.GetNode<AnimationPlayer>("AnimationPlayer").Play("SpawnGood");
 
 
-        currentScaleFactor -= 0.03f; // smaller spawns each time for difficulty 
-        currentColorFactor += 0.04f; // increase color gradient value
-        GameClock.WaitTime -= 0.04f; // increase spawn frequency
+        currentScaleFactor -= 0.016f; // smaller spawns each time for difficulty 
+        currentColorFactor += 0.025f; // increase color gradient value
+        GameClock.WaitTime -= 0.032f; // increase spawn frequency
         ballCounter++;
 
-        currentScaleFactor = Mathf.Clamp(currentScaleFactor, 0.12f, 1.0f);
+        currentScaleFactor = Mathf.Clamp(currentScaleFactor, 0.2f, 1.0f);
         currentColorFactor = Mathf.Clamp(currentColorFactor, 0.0f, 1.0f);
-        GameClock.WaitTime = Mathf.Clamp(GameClock.WaitTime, 2.5f, 5.0f);
+        GameClock.WaitTime = Mathf.Clamp(GameClock.WaitTime, 3.0f, 5.5f);
     }
 
     public void DoCameraShake(float newShake, float shakeTime = 0.4f, float shakeLimit = 100)
@@ -159,9 +195,9 @@ public class GameManager : Node
         ballCollidePlayer.Play();
     }
 
-//  // Called every frame. 'delta' is the elapsed time since the previous frame.
-//  public override void _Process(float delta)
-//  {
-//      
-//  }
+    //  // Called every frame. 'delta' is the elapsed time since the previous frame.
+    //  public override void _Process(float delta)
+    //  {
+    //      
+    //  }
 }

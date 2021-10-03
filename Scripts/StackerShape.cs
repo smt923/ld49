@@ -39,8 +39,8 @@ public class StackerShape : RigidBody
         gm.Score += score;
         Disconnect("body_entered", this, nameof(_OnCollisionEnter));
         HasLanded = true;
-        Mass = 80;
-        GravityScale = 1.5f;
+        Mass = 120;
+        GravityScale = 1.85f;
         gm.PlayBlockCollide();
     }
 

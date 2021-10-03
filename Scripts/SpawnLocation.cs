@@ -6,8 +6,8 @@ public class SpawnLocation : KinematicBody
     private float maxDistance = 1.5f;
     private bool hasFlipped = false;
     private float moveVec = 1.0f;
-    private float moveSpeed = 0.8f;
-    private float speedDamp = 5.0f;
+    private float moveSpeed = 0.95f;
+    private float speedDamp = 4.0f;
     private Vector3 moveDirection;
     private Vector3 slideVelocity;
     private Vector3 finalMovement;
@@ -51,11 +51,11 @@ public class SpawnLocation : KinematicBody
 
         moveVec = -moveVec;
 
-        maxDistance += 0.4f;
-        moveSpeed += 0.4f;
+        maxDistance += 0.3f;
+        moveSpeed += 0.2f;
 
-        maxDistance = Mathf.Clamp(maxDistance, 0.5f, 14.0f);
-        moveSpeed = Mathf.Clamp(moveSpeed, 0.1f, 6.0f);
+        maxDistance = Mathf.Clamp(maxDistance, 0.5f, 12.0f);
+        moveSpeed = Mathf.Clamp(moveSpeed, 0.1f, 5.0f);
 
         timer.WaitTime += 0.25f;
         timer.WaitTime = Mathf.Clamp(timer.WaitTime, 2.0f, 7.5f);

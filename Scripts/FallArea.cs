@@ -18,6 +18,7 @@ public class FallArea : Area
             GD.Print("Lost a shape!");
             gm.Score -= 200;
             gm.DoPopup($"-200  shape dropped");
+            gm.SpawnedShapes.Remove(body);
             body.QueueFree();
         }
 

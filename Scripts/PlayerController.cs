@@ -51,11 +51,11 @@ public class PlayerController : KinematicBody
         float castLheight = castL.GetCollisionPoint().y;
         float castRheight = castR.GetCollisionPoint().y;
 
-        if (castCheight > castLheight && castCheight > castRheight)
+        if (castRheight > castLheight && castRheight > castCheight)
         {
-            if (castC.GetCollider() is StackerShape shapeC && shapeC.HasLanded)
+            if (castR.GetCollider() is StackerShape shapeR && shapeR.HasLanded)
             {
-                Vector3 hitVec = castC.GetCollisionPoint();
+                Vector3 hitVec = castR.GetCollisionPoint();
                 hitVec.x = Transform.origin.x;
                 hitVec.z = Transform.origin.z;
                 gameManager.PlayerStackHeight = Transform.origin.DistanceTo(hitVec);
@@ -73,9 +73,9 @@ public class PlayerController : KinematicBody
         }
         else
         {
-            if (castR.GetCollider() is StackerShape shapeR && shapeR.HasLanded)
+            if (castC.GetCollider() is StackerShape shapeC && shapeC.HasLanded)
             {
-                Vector3 hitVec = castR.GetCollisionPoint();
+                Vector3 hitVec = castC.GetCollisionPoint();
                 hitVec.x = Transform.origin.x;
                 hitVec.z = Transform.origin.z;
                 gameManager.PlayerStackHeight = Transform.origin.DistanceTo(hitVec);
