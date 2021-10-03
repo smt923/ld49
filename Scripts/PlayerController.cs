@@ -4,6 +4,9 @@ using System;
 public class PlayerController : KinematicBody
 {
     private float speed = 6.6f;
+    private float defaultspeed;
+    private float defaultdamp;
+    public float sprintTimer = 3.0f;
     private float speedDamp = 1.4f;
     private Vector3 moveDirection;
     private Vector3 hVelocity;
@@ -15,13 +18,16 @@ public class PlayerController : KinematicBody
 
     public override void _Ready()
     {
-        gameManager = GetNode<GameManager>("/root/GameManager");
+        gameManager = GetNode<GameManager>("/root/World/GameManager");
         castC = GetNode<RayCast>("RayCastC");
         castL = GetNode<RayCast>("RayCastL");
         castR = GetNode<RayCast>("RayCastR");
         castC.Enabled = true;
         castL.Enabled = true;
         castR.Enabled = true;
+
+        defaultspeed = speed;
+        defaultdamp = speedDamp;
     }
 
     public override void _PhysicsProcess(float delta)
@@ -34,6 +40,20 @@ public class PlayerController : KinematicBody
             moveDirection = new Vector3(1, 0, -1);
         else
             moveDirection = Vector3.Zero;
+        
+        if (Input.IsActionPressed("Sprint") && sprintTimer >= 0.0f)
+        {
+            speed = defaultspeed + 4.0f;
+            speedDamp = defaultdamp + 1.0f;
+            sprintTimer -= 1.0f * delta;
+        }
+        else
+        {
+            speed = defaultspeed;
+            speedDamp = defaultdamp;
+            sprintTimer += 1.0f * delta;
+        }
+        sprintTimer = Mathf.Clamp(sprintTimer, 0.0f, 3.0f);
 
         moveDirection = moveDirection.Normalized();
         hVelocity = hVelocity.LinearInterpolate(moveDirection * speed, speedDamp * delta);
@@ -59,6 +79,7 @@ public class PlayerController : KinematicBody
                 hitVec.x = Transform.origin.x;
                 hitVec.z = Transform.origin.z;
                 gameManager.PlayerStackHeight = Transform.origin.DistanceTo(hitVec);
+                return;
             }
         }
         else if (castLheight > castCheight && castLheight > castRheight)
@@ -69,6 +90,7 @@ public class PlayerController : KinematicBody
                 hitVec.x = Transform.origin.x;
                 hitVec.z = Transform.origin.z;
                 gameManager.PlayerStackHeight = Transform.origin.DistanceTo(hitVec);
+                return;
             }
         }
         else
@@ -79,7 +101,24 @@ public class PlayerController : KinematicBody
                 hitVec.x = Transform.origin.x;
                 hitVec.z = Transform.origin.z;
                 gameManager.PlayerStackHeight = Transform.origin.DistanceTo(hitVec);
+                return;
             }
+        }
+        if (castC.GetCollider() == null && castL.GetCollider() == null && castR.GetCollider() == null)
+        {
+            gameManager.PlayerStackHeight = 0.0f;
+        }
+    }
+
+    public void Freeze(bool frozen = true)
+    {
+        if (frozen)
+        {
+            speed = 0.0f;
+        }
+        else
+        {
+            speed = defaultspeed;
         }
     }
 }

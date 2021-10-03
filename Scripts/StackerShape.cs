@@ -13,7 +13,7 @@ public class StackerShape : RigidBody
     {
         SetSizeScale(1, 1);
         CenterPoint = GetNode<Spatial>("CollisionShape/Center");
-        gm = GetNode<GameManager>("/root/GameManager");
+        gm = GetNode<GameManager>("/root/World/GameManager");
     }
 
     public void SetSizeScale(float x, float z)

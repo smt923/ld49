@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://Scenes/FloorPlayer.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scripts/CameraShake.cs" type="Script" id=2]
@@ -8,33 +8,21 @@
 [ext_resource path="res://Audio/NegativeRandomPitch.tres" type="AudioStream" id=6]
 [ext_resource path="res://Audio/BlockRandomPitch.tres" type="AudioStream" id=7]
 [ext_resource path="res://Fonts/UIbig.tres" type="DynamicFont" id=8]
+[ext_resource path="res://Audio/PopRandomPitch.tres" type="AudioStream" id=9]
+[ext_resource path="res://Audio/Blue Boi.mp3" type="AudioStream" id=10]
+[ext_resource path="res://Scripts/GameManager.cs" type="Script" id=11]
+[ext_resource path="res://Styles/BtnPressed.tres" type="StyleBox" id=12]
+[ext_resource path="res://Styles/BtnHover.tres" type="StyleBox" id=13]
+[ext_resource path="res://Styles/BtnNormal.tres" type="StyleBox" id=14]
+[ext_resource path="res://Fonts/UIsmall.tres" type="DynamicFont" id=15]
+[ext_resource path="res://Scripts/CinematicCamera.cs" type="Script" id=16]
 
 [sub_resource type="ProceduralSky" id=1]
-sky_top_color = Color( 0.701961, 0.74902, 0.792157, 1 )
-sky_horizon_color = Color( 0.839216, 0.839216, 0.882353, 1 )
-sky_energy = 0.5
 
 [sub_resource type="Environment" id=2]
-background_mode = 3
-background_sky = SubResource( 1 )
-background_color = Color( 0.215686, 0.254902, 0.345098, 1 )
-ambient_light_color = Color( 0.678431, 0.776471, 0.92549, 1 )
-fog_depth_enabled = false
-fog_depth_begin = 100.0
-tonemap_mode = 3
-
-[sub_resource type="BoxShape" id=3]
-extents = Vector3( 50, 1, 50 )
-
-[sub_resource type="BoxShape" id=4]
-extents = Vector3( 50, 0.1, 50 )
-
-[sub_resource type="ProceduralSky" id=5]
-
-[sub_resource type="Environment" id=6]
 background_mode = 1
-background_sky = SubResource( 5 )
-background_color = Color( 0.196078, 0.266667, 0.364706, 1 )
+background_sky = SubResource( 1 )
+background_color = Color( 0.313726, 0.305882, 0.407843, 1 )
 background_energy = 0.2
 ambient_light_color = Color( 0.396078, 0.454902, 0.541176, 1 )
 ambient_light_energy = 1.5
@@ -44,13 +32,46 @@ dof_blur_far_transition = 4.18
 dof_blur_far_amount = 0.17
 dof_blur_far_quality = 2
 adjustment_enabled = true
-adjustment_brightness = 1.11
+adjustment_brightness = 1.05
 adjustment_contrast = 1.05
-adjustment_saturation = 1.11
+adjustment_saturation = 1.05
+
+[sub_resource type="ProceduralSky" id=3]
+sky_top_color = Color( 0.792157, 0.827451, 0.858824, 1 )
+sky_horizon_color = Color( 0.839216, 0.839216, 0.882353, 1 )
+sky_energy = 0.5
+
+[sub_resource type="Environment" id=4]
+background_mode = 3
+background_sky = SubResource( 3 )
+background_color = Color( 0.258824, 0.25098, 0.317647, 1 )
+background_energy = 1.11
+ambient_light_color = Color( 0.678431, 0.776471, 0.92549, 1 )
+fog_depth_enabled = false
+fog_depth_begin = 100.0
+tonemap_mode = 3
+
+[sub_resource type="BoxShape" id=5]
+extents = Vector3( 50, 1, 50 )
+
+[sub_resource type="BoxShape" id=6]
+extents = Vector3( 50, 0.1, 50 )
 
 [node name="World" type="Spatial"]
 
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource( 11 )
+
 [node name="FloorPlayer" parent="." instance=ExtResource( 1 )]
+
+[node name="CinematicCamera" type="Camera" parent="FloorPlayer"]
+pause_mode = 2
+transform = Transform( 0.707107, -0.353553, 0.612372, 0, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 29.891, 37.026, 34.605 )
+environment = SubResource( 2 )
+projection = 1
+fov = 20.0
+size = 15.0
+script = ExtResource( 16 )
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 0.707107, -0.183013, 0.683013, 0, 0.965926, 0.258819, -0.707107, -0.183013, 0.683013, 24, 16, 24 )
@@ -66,7 +87,7 @@ script = ExtResource( 2 )
 [node name="Tween" type="Tween" parent="Camera"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource( 2 )
+environment = SubResource( 4 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 0.985995, 0.0773466, -0.147755, 0.0995695, 0.437718, 0.893582, 0.133791, -0.895779, 0.423886, 0, 22.0994, 0 )
@@ -77,21 +98,22 @@ shadow_color = Color( 0.0941176, 0.0941176, 0.0941176, 1 )
 [node name="SpawnLocation" parent="." instance=ExtResource( 3 )]
 
 [node name="FallArea" type="Area" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -7, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -14, 0 )
 script = ExtResource( 4 )
 
 [node name="CollisionShape" type="CollisionShape" parent="FallArea"]
-shape = SubResource( 3 )
+shape = SubResource( 5 )
 
 [node name="WinArea" type="Area" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0 )
 
 [node name="CollisionShape" type="CollisionShape" parent="WinArea"]
-shape = SubResource( 4 )
+shape = SubResource( 6 )
 
 [node name="UI" parent="." instance=ExtResource( 5 )]
 
 [node name="WinUI" type="Control" parent="."]
+pause_mode = 2
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -100,16 +122,41 @@ __meta__ = {
 }
 
 [node name="Label" type="Label" parent="WinUI"]
+anchor_left = 0.5
 anchor_top = 0.5
+anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = 64.0
-margin_top = -51.0
-margin_right = 369.0
-margin_bottom = 51.0
+margin_left = -186.0
+margin_top = -61.5
+margin_right = 186.0
+margin_bottom = 61.5
 custom_fonts/font = ExtResource( 8 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 0.290196 )
+custom_constants/shadow_offset_x = 2
+custom_constants/shadow_offset_y = 2
 text = "YOU WIN"
 align = 1
 valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RestartButton" type="Button" parent="WinUI"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -75.0
+margin_top = -120.0
+margin_right = 75.0
+margin_bottom = -70.0
+rect_min_size = Vector2( 150, 50 )
+custom_styles/hover = ExtResource( 13 )
+custom_styles/pressed = ExtResource( 12 )
+custom_styles/focus = ExtResource( 13 )
+custom_styles/normal = ExtResource( 14 )
+custom_fonts/font = ExtResource( 15 )
+text = "AGAIN?"
 
 [node name="BlockCollidePlayer" type="AudioStreamPlayer" parent="."]
 bus = "BlockCollide"
@@ -126,11 +173,14 @@ stream = ExtResource( 7 )
 volume_db = -3.0
 bus = "BlockCollide"
 
-[node name="CinematicCamera" type="Camera" parent="."]
-transform = Transform( 0.707107, -0.353553, 0.612372, 0, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 30.916, 35.19, 34.605 )
-environment = SubResource( 6 )
-projection = 1
-fov = 20.0
-size = 15.0
+[node name="PopPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 9 )
+bus = "Pop"
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 10 )
+autoplay = true
+bus = "Music"
 
 [connection signal="body_entered" from="FallArea" to="FallArea" method="_on_FallArea_body_entered"]
+[connection signal="pressed" from="WinUI/RestartButton" to="UI" method="_on_RestartButton_pressed"]

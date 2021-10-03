@@ -8,7 +8,7 @@ public class FallArea : Area
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        gm = GetNode<GameManager>("/root/GameManager");
+        gm = GetNode<GameManager>("/root/World/GameManager");
     }
 
     public void _on_FallArea_body_entered(Node body)
@@ -19,6 +19,7 @@ public class FallArea : Area
             gm.Score -= 200;
             gm.DoPopup($"-200  shape dropped");
             gm.SpawnedShapes.Remove(body);
+            GetNode<AudioStreamPlayer>("/root/World/PopPlayer").Play();
             body.QueueFree();
         }
 

@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Blue Boi.mp3-dc2e8855d07fa9cecfda5364482eba23.mp3str"
+
+[deps]
+
+source_file="res://Audio/Blue Boi.mp3"
+dest_files=[ "res://.import/Blue Boi.mp3-dc2e8855d07fa9cecfda5364482eba23.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0

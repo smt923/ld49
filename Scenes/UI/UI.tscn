@@ -1,24 +1,27 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Fonts/UI.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Scripts/UI.cs" type="Script" id=2]
 [ext_resource path="res://Fonts/UIsmall.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Styles/BtnPressed.tres" type="StyleBox" id=4]
+[ext_resource path="res://Styles/BtnNormal.tres" type="StyleBox" id=5]
+[ext_resource path="res://Styles/BtnHover.tres" type="StyleBox" id=6]
 
 [sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.172549, 0.54902, 0.894118, 1 )
+bg_color = Color( 0.639216, 0.419608, 1, 0.854902 )
 border_color = Color( 0.329412, 0.541176, 0.839216, 1 )
-shadow_color = Color( 0, 0, 0, 0.203922 )
-shadow_size = 1
+shadow_color = Color( 0, 0, 0, 0.352941 )
 shadow_offset = Vector2( 1, 1 )
 
 [sub_resource type="StyleBoxFlat" id=2]
-bg_color = Color( 0.886275, 0.894118, 0.988235, 1 )
+bg_color = Color( 0.886275, 0.894118, 0.988235, 0.811765 )
 expand_margin_left = 2.0
 expand_margin_right = 2.0
 expand_margin_top = 2.0
 expand_margin_bottom = 2.0
 
 [node name="UI" type="Control"]
+pause_mode = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -0.5
@@ -29,10 +32,10 @@ __meta__ = {
 }
 
 [node name="Score" type="Label" parent="."]
-margin_left = 32.0
-margin_top = 32.0
-margin_right = 132.0
-margin_bottom = 122.0
+margin_left = 11.0
+margin_top = 18.0
+margin_right = 111.0
+margin_bottom = 108.0
 custom_fonts/font = ExtResource( 1 )
 text = "0"
 align = 1
@@ -42,10 +45,10 @@ __meta__ = {
 }
 
 [node name="Height" type="Label" parent="."]
-margin_left = 32.0
-margin_top = 160.0
-margin_right = 132.0
-margin_bottom = 250.0
+margin_left = 17.0
+margin_top = 146.0
+margin_right = 157.0
+margin_bottom = 236.0
 rect_min_size = Vector2( 140, 90 )
 custom_fonts/font = ExtResource( 1 )
 text = "0.0m"
@@ -56,12 +59,12 @@ __meta__ = {
 }
 
 [node name="HeightText" type="Label" parent="."]
-margin_left = 160.0
-margin_top = 165.0
-margin_right = 245.0
-margin_bottom = 255.0
+margin_left = 145.0
+margin_top = 151.0
+margin_right = 230.0
+margin_bottom = 241.0
 custom_fonts/font = ExtResource( 3 )
-text = "/ 16m"
+text = "/ 12m"
 align = 1
 valign = 1
 __meta__ = {
@@ -87,4 +90,88 @@ rect_min_size = Vector2( 210, 22 )
 custom_styles/fg = SubResource( 1 )
 custom_styles/bg = SubResource( 2 )
 max_value = 5.0
+value = 2.0
 percent_visible = false
+
+[node name="SprintBar" type="ProgressBar" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -140.0
+margin_top = -20.0
+margin_right = 140.0
+margin_bottom = -6.0
+rect_min_size = Vector2( 280, 16 )
+custom_styles/fg = SubResource( 1 )
+custom_styles/bg = SubResource( 2 )
+max_value = 3.0
+value = 3.0
+percent_visible = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="SprintBar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -18.0
+margin_bottom = 18.0
+custom_fonts/font = ExtResource( 3 )
+text = ">>>"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RestartMenu" type="ColorRect" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 0.411765 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="RestartMenu"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -199.794
+margin_top = -25.0
+margin_right = 199.794
+margin_bottom = 25.0
+custom_constants/separation = 16
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RestartButton" type="Button" parent="RestartMenu/HBoxContainer"]
+margin_left = 41.0
+margin_right = 191.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 150, 50 )
+custom_styles/hover = ExtResource( 6 )
+custom_styles/pressed = ExtResource( 4 )
+custom_styles/focus = ExtResource( 6 )
+custom_styles/normal = ExtResource( 5 )
+custom_fonts/font = ExtResource( 3 )
+text = "RESTART"
+
+[node name="ResumeButton" type="Button" parent="RestartMenu/HBoxContainer"]
+margin_left = 207.0
+margin_right = 357.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 150, 50 )
+custom_styles/hover = ExtResource( 6 )
+custom_styles/pressed = ExtResource( 4 )
+custom_styles/focus = ExtResource( 6 )
+custom_styles/normal = ExtResource( 5 )
+custom_fonts/font = ExtResource( 3 )
+text = "RESUME"
+
+[connection signal="pressed" from="RestartMenu/HBoxContainer/RestartButton" to="." method="_on_RestartButton_pressed"]
+[connection signal="pressed" from="RestartMenu/HBoxContainer/ResumeButton" to="." method="_on_ResumeButton_pressed"]

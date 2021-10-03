@@ -16,7 +16,7 @@ public class GameManager : Node
     private Spatial SpawnLocation;
     public PlayerController PlayerFloor;
     public float PlayerStackHeight;
-    private CameraShake CameraShake;
+    private CameraShake CameraScript;
     private Timer GameClock;
     private UI UI;
     private PackedScene StackerShape;
@@ -33,14 +33,14 @@ public class GameManager : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        PauseMode = PauseModeEnum.Process;
+        PauseMode = PauseModeEnum.Stop;
 
         StackerShape = ResourceLoader.Load<PackedScene>("res://Scenes/StackerShape.tscn");
         ObstacleBall = ResourceLoader.Load<PackedScene>("res://Scenes/ObstacleBall.tscn");
         ShapeColors = ResourceLoader.Load<Gradient>("res://Materials/ShapeColors.tres");
         SpawnLocation = GetNode<Spatial>("/root/World/SpawnLocation");
         PlayerFloor = GetNode<PlayerController>("/root/World/FloorPlayer");
-        CameraShake = GetNode<CameraShake>("/root/World/Camera");
+        CameraScript = GetNode<CameraShake>("/root/World/Camera");
         UI = GetNode<UI>("/root/World/UI");
         blockCollidePlayer = GetNode<AudioStreamPlayer>("/root/World/BlockCollidePlayer");
         ballCollidePlayer = GetNode<AudioStreamPlayer>("/root/World/BallCollidePlayer");
@@ -75,29 +75,40 @@ public class GameManager : Node
     {
         base._Process(delta);
 
-        CameraShake.Size += zoomOutRate * delta;
-        CameraShake.Size = Mathf.Clamp(CameraShake.Size, 10.0f, 48.0f);
+        CameraScript.Size += zoomOutRate * delta;
+        CameraScript.Size = Mathf.Clamp(CameraScript.Size, 10.0f, 48.0f);
 
-        Transform camerat = CameraShake.Transform;
+        Transform camerat = CameraScript.Transform;
         camerat.origin.y += zoomOutRate / 2 * delta;
         camerat.origin.y = Mathf.Clamp(camerat.origin.y, 12.0f, 30.0f);
-        CameraShake.Transform = camerat;
+        CameraScript.Transform = camerat;
 
         Transform spawnt = SpawnLocation.Transform;
         spawnt.origin.y += zoomOutRate * delta;
         spawnt.origin.y = Mathf.Clamp(spawnt.origin.y, 14.0f, 42.0f);
         SpawnLocation.Transform = spawnt;
 
-        if (PlayerStackHeight > 16.0f)
+        if (Input.IsActionJustPressed("Mute"))
+        {
+            AudioStreamPlayer music = GetNode<AudioStreamPlayer>("/root/World/MusicPlayer");
+            if (music.Playing)
+                music.Stop();
+            else
+                music.Play();
+        }
+
+
+        if (PlayerStackHeight > 12.0f)
         {
             if (winCounter >= 5.0f)
             {
-                Camera cine = GetNode<Camera>("/root/World/CinematicCamera");
+                CinematicCamera cine = GetNode<CinematicCamera>("/root/World/FloorPlayer/CinematicCamera");
                 if (GameWon == false)
                 {
                     GameWon = true;
-                    GD.Print("hit 16m!");
-                    DoPopup("you hit 16m! you win!");
+                    GD.Print("hit 12m!");
+                    DoPopup("you hit 12m! you win!");
+                    cine.Start();
                     UI.Visible = false;
                     GetNode<Control>("/root/World/WinUI").Visible = true;
                     SpawnLocation.Visible = false;
@@ -106,12 +117,10 @@ public class GameManager : Node
                         if (shape is StackerShape s && s.HasLanded == false)
                             shape.QueueFree();
                     }
-                    cine.Current = true;
+                    PlayerFloor.Freeze();
                     GetTree().Paused = true;
                     winCounter = 5.0f;
                 }
-                cine.Size += 1.0f * delta;
-                cine.Size = Mathf.Clamp(cine.Size, 15.0f, 40.0f);
             }
             winCounter += 1.0f * delta;
         }
@@ -151,8 +160,8 @@ public class GameManager : Node
         SpawnLocation.GetNode<AnimationPlayer>("AnimationPlayer").Play("SpawnGood");
 
 
-        currentScaleFactor -= 0.016f; // smaller spawns each time for difficulty 
-        currentColorFactor += 0.025f; // increase color gradient value
+        currentScaleFactor -= 0.02f; // smaller spawns each time for difficulty 
+        currentColorFactor += 0.022f; // increase color gradient value
         GameClock.WaitTime -= 0.032f; // increase spawn frequency
         ballCounter++;
 
@@ -163,7 +172,7 @@ public class GameManager : Node
 
     public void DoCameraShake(float newShake, float shakeTime = 0.4f, float shakeLimit = 100)
     {
-        CameraShake.Shake(newShake, shakeTime, shakeLimit);
+        CameraScript.Shake(newShake, shakeTime, shakeLimit);
     }
 
     public void DoPopup(string Text)
