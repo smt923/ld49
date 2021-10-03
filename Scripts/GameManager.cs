@@ -7,13 +7,13 @@ public class GameManager : Node
     public int Score = 0;
    
     private float zoomOutRate = 0.2f;
-    private float currentMass = 10.0f;
     private float currentScaleFactor = 1.0f;
     private float currentColorFactor = 0.0f;
     private int points = 0;
     private int ballCounter = 0;
     private Spatial SpawnLocation;
     public PlayerController PlayerFloor;
+    public float PlayerStackHeight;
     private CameraShake CameraShake;
     private Timer GameClock;
     private UI UI;
@@ -24,6 +24,8 @@ public class GameManager : Node
     private List<AudioStream> BallCollideSounds = new List<AudioStream>{};
     private AudioStreamPlayer blockCollidePlayer;
     private AudioStreamPlayer ballCollidePlayer;
+    private AudioStreamPlayer ballSpawnPlayer;
+    private AudioStreamPlayer blockSpawnPlayer;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -37,6 +39,8 @@ public class GameManager : Node
         UI = GetNode<UI>("/root/World/UI");
         blockCollidePlayer = GetNode<AudioStreamPlayer>("/root/World/BlockCollidePlayer");
         ballCollidePlayer = GetNode<AudioStreamPlayer>("/root/World/BallCollidePlayer");
+        ballSpawnPlayer = GetNode<AudioStreamPlayer>("/root/World/BallSpawnPlayer");
+        blockSpawnPlayer = GetNode<AudioStreamPlayer>("/root/World/BlockSpawnPlayer");
 
         BlockCollideSounds.Add(GD.Load<AudioStream>("res://Audio/Wood/impactWood_medium_000.ogg"));
         BlockCollideSounds.Add(GD.Load<AudioStream>("res://Audio/Wood/impactWood_medium_001.ogg"));
@@ -78,6 +82,8 @@ public class GameManager : Node
         spawnt.origin.y += zoomOutRate * delta;
         spawnt.origin.y = Mathf.Clamp(spawnt.origin.y, 14.0f, 42.0f);
         SpawnLocation.Transform = spawnt;
+
+
     }
 
     void onGameTick()
@@ -90,6 +96,8 @@ public class GameManager : Node
             tr.origin = SpawnLocation.Transform.origin;
             tr.origin.y += 12.0f;
             newBall.Transform = tr;
+            ballSpawnPlayer.Play();
+            SpawnLocation.GetNode<AnimationPlayer>("AnimationPlayer").Play("SpawnBad");
 
             ballCounter = 0;
             return;
@@ -98,23 +106,23 @@ public class GameManager : Node
         StackerShape newShape = StackerShape.Instance<StackerShape>();
         newShape.SetSizeScale(currentScaleFactor, currentScaleFactor);
         newShape.SetColor(ShapeColors.Interpolate(currentColorFactor));
-        newShape.Mass = currentMass;
         AddChild(newShape);
         Transform t = newShape.Transform;
         t.origin = SpawnLocation.Transform.origin;
         t.origin.y += 10.0f;
         newShape.Transform = t;
+        blockSpawnPlayer.Play();
+        SpawnLocation.GetNode<AnimationPlayer>("AnimationPlayer").Play("SpawnGood");
+
 
         currentScaleFactor -= 0.03f; // smaller spawns each time for difficulty 
         currentColorFactor += 0.04f; // increase color gradient value
-        GameClock.WaitTime -= 0.1f; // increase spawn frequency
-        currentMass += 2.0f; // each shape is heavier
+        GameClock.WaitTime -= 0.04f; // increase spawn frequency
         ballCounter++;
 
-        currentScaleFactor = Mathf.Clamp(currentScaleFactor, 0.01f, 1.0f);
+        currentScaleFactor = Mathf.Clamp(currentScaleFactor, 0.12f, 1.0f);
         currentColorFactor = Mathf.Clamp(currentColorFactor, 0.0f, 1.0f);
-        GameClock.WaitTime = Mathf.Clamp(GameClock.WaitTime, 1.0f, 5.0f);
-        currentMass = Mathf.Clamp(currentMass, 1.0f, 1000.0f);
+        GameClock.WaitTime = Mathf.Clamp(GameClock.WaitTime, 2.5f, 5.0f);
     }
 
     public void DoCameraShake(float newShake, float shakeTime = 0.4f, float shakeLimit = 100)
@@ -133,18 +141,20 @@ public class GameManager : Node
         GD.Randomize();
         int i = (int)GD.RandRange(0, BlockCollideSounds.Count);
         blockCollidePlayer.Stream = BlockCollideSounds[i];
-        GD.Print(BlockCollideSounds[i]);
+        //GD.Print(BlockCollideSounds[i]);
         blockCollidePlayer.PitchScale = (float)GD.RandRange(0.95f, 1.05f);
         blockCollidePlayer.Play();
     }
 
     public void PlayBallCollide()
     {
+        blockCollidePlayer.Stop();
+        ballSpawnPlayer.Stop();
         ballCollidePlayer.Stop();
         GD.Randomize();
         int i = (int)GD.RandRange(0, BallCollideSounds.Count);
         ballCollidePlayer.Stream = BallCollideSounds[i];
-        GD.Print(BallCollideSounds[i]);
+        //GD.Print(BallCollideSounds[i]);
         ballCollidePlayer.PitchScale = (float)GD.RandRange(0.95f, 1.05f);
         ballCollidePlayer.Play();
     }

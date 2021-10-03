@@ -18,6 +18,17 @@ public class FallArea : Area
             GD.Print("Lost a shape!");
             gm.Score -= 200;
             gm.DoPopup($"-200  shape dropped");
+            body.QueueFree();
+        }
+
+        if (body is ObstacleBall ob)
+        {
+            if (ob.HitObjects == false)
+            {
+                gm.Score += 200;
+                gm.DoPopup($"+200  ball dodged");
+            }
+            body.QueueFree();
         }
     }
 }

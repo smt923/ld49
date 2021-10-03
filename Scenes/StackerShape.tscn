@@ -14,7 +14,7 @@ resource_name = "FadeInShape"
 [node name="StackerShape" type="RigidBody"]
 mass = 10.0
 physics_material_override = ExtResource( 1 )
-gravity_scale = 0.9
+gravity_scale = 0.88
 continuous_cd = true
 contacts_reported = 1
 contact_monitor = true

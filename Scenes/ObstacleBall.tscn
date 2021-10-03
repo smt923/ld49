@@ -4,19 +4,20 @@
 [ext_resource path="res://Scripts/ObstacleBall.cs" type="Script" id=2]
 
 [sub_resource type="PhysicsMaterial" id=1]
-friction = 0.2
+friction = 0.3
 rough = true
-bounce = 0.29
+bounce = 0.34
 
 [sub_resource type="SphereShape" id=2]
 
 [sub_resource type="SphereMesh" id=3]
 
 [node name="ObstacleBall" type="RigidBody"]
-mass = 50.0
+mass = 200.0
 physics_material_override = SubResource( 1 )
+gravity_scale = 1.1
 continuous_cd = true
-contacts_reported = 4
+contacts_reported = 5
 contact_monitor = true
 script = ExtResource( 2 )
 

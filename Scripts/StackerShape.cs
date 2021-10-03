@@ -3,9 +3,7 @@ using System;
 
 public class StackerShape : RigidBody
 {
-    // Declare member variables here. Examples:
-    // private int a = 2;
-    // private string b = "text";
+    public bool HasLanded = false;
     public Spatial CenterPoint;
     public GameManager gm;
 
@@ -39,8 +37,11 @@ public class StackerShape : RigidBody
         float distance = locationMinusHeight.DistanceTo(gm.PlayerFloor.Transform.origin);
         int score = CalcScore(distance);
         gm.Score += score;
-        gm.PlayBlockCollide();
         Disconnect("body_entered", this, nameof(_OnCollisionEnter));
+        HasLanded = true;
+        Mass = 80;
+        GravityScale = 1.5f;
+        gm.PlayBlockCollide();
     }
 
     private int CalcScore(float Distance)

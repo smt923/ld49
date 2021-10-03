@@ -17,7 +17,7 @@ public class PopupText : Label
         anim.Play("PopupText");
     }
 
-    public void _on_AnimationPlayer_animation_finished()
+    public void _on_AnimationPlayer_animation_finished(String animName)
     {
         QueueFree();
     }

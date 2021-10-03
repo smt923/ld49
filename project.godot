@@ -32,11 +32,6 @@ output_latency=16
 
 GameManager="*res://Scripts/GameManager.cs"
 
-[display]
-
-window/size/width=1440
-window/size/height=900
-
 [gdnative]
 
 singletons=[ "res://addons/godot-git-plugin/git_api.gdnlib" ]
