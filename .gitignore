@@ -1,0 +1,10 @@
+# Import cache
+.import/
+.mono/
+.vscode/
+
+# Binaries
+bin/
+build/
+lib/
+builds/

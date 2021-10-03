@@ -1,0 +1,36 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Materials/ShapePhysMat.tres" type="PhysicsMaterial" id=1]
+[ext_resource path="res://Scripts/StackerShape.cs" type="Script" id=2]
+[ext_resource path="res://Materials/ShapeMaterial.tres" type="Material" id=3]
+
+[sub_resource type="BoxShape" id=1]
+
+[sub_resource type="CubeMesh" id=2]
+
+[sub_resource type="Animation" id=3]
+resource_name = "FadeInShape"
+
+[node name="StackerShape" type="RigidBody"]
+mass = 10.0
+physics_material_override = ExtResource( 1 )
+gravity_scale = 0.9
+continuous_cd = true
+contacts_reported = 1
+contact_monitor = true
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+transform = Transform( 6, 0, 0, 0, 0.3, 0, 0, 0, 6, 0, 0, 0 )
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="CollisionShape"]
+mesh = SubResource( 2 )
+material/0 = ExtResource( 3 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CollisionShape/MeshInstance"]
+anims/FadeInShape = SubResource( 3 )
+
+[node name="Center" type="Spatial" parent="CollisionShape"]
+
+[connection signal="body_entered" from="." to="." method="_OnCollisionEnter"]
